@@ -1,0 +1,10 @@
+version: "3.9"  # Asegúrate de usar una versión compatible
+
+services:
+  web:
+    build: . # Contexto de construcción es el directorio actual
+    ports:
+      - "3000:3000" # Mapea el puerto del contenedor al puerto del host
+    #Puedes agregar variables de entorno si son necesarias
+    environment:
+      - NODE_ENV=development
