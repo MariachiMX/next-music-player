@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/MariachiMX/next-music-player.git'
+                git branch: 'DEV01', url: 'https://github.com/MariachiMX/next-music-player.git'
             }
         }
         stage('Build') {
