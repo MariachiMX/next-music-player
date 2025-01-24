@@ -8,6 +8,8 @@ COPY . .
 
 WORKDIR /app
 
+ARG SETUP_CONFIG=L
+ENV SETUP_CONFIG=${SETUP_CONFIG}
 RUN npm run db:setup
 
 COPY tracks /app/tracks
@@ -22,4 +24,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev"]
+CMD ["npm dev"]
