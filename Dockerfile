@@ -11,6 +11,7 @@ COPY pnpm-lock.yaml ./
 # Instala las dependencias con pnpm
 RUN npm install -g pnpm@10
 RUN pnpm install
+RUN npm run test:coverage
 # Copia el resto del código fuente
 COPY . .
 
