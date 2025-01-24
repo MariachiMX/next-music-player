@@ -1,20 +1,12 @@
-# Stage 1: Build stage
 FROM node:alpine AS builder
 
 WORKDIR /app
-
-# Copia solo los archivos necesarios para las dependencias
 COPY package*.json ./
-RUN npm install --omit=dev # Instala solo dependencias de producción
+RUN npm install
 
-# Instala pnpm globalmente en la etapa de builder
-RUN npm install -g pnpm
-
-# Copia el resto del código fuente
 COPY . .
 
-# Compila el código TypeScript si es necesario
-RUN npm run build # Asegúrate de tener este script en package.json
+WORKDIR /app
 
 ARG SETUP_CONFIG=L
 ENV SETUP_CONFIG=${SETUP_CONFIG}
@@ -25,11 +17,10 @@ COPY tracks /app/tracks
 RUN npm run db:migrate
 RUN npm run db:seed
 
-# Stage 2: Production stage
 FROM node:alpine
 
 WORKDIR /app
-
+COPY . .
 # Copia pnpm desde la etapa de builder
 COPY --from=builder /usr/local/bin/pnpm /usr/local/bin/pnpm #Copia pnpm
 COPY --from=builder /app/node_modules ./node_modules
@@ -41,5 +32,6 @@ COPY --from=builder /app/tracks ./tracks
 COPY --from=builder /app/.env ./.env #Si usas variables de entorno
 
 EXPOSE 3000
+
 
 CMD ["pnpm", "run", "start"]
