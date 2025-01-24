@@ -1,9 +1,16 @@
-version: '3.8'
 
 services:
-  next-music-player:
-    build: .
+  postgres:
+    image: postgres:16.4-alpine
+    container_name: music_player_postgres
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
-      - "3000:3000"
+      - "54322:5432"
     volumes:
-      - ./tracks:/app/tracks
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
