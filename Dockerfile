@@ -1,22 +1,39 @@
-# Usa una imagen base con Node.js 23 y pnpm ya instalados
+# Imagen base
 FROM node:18-alpine
 
-# Establece el directorio de trabajo dentro del contenedor
+# Establecer el directorio de trabajo
 WORKDIR /app
 
-# Copia los archivos de configuración de pnpm para aprovechar el caché de capas
-COPY package.json ./
-COPY pnpm-lock.yaml ./
+# Instalar dependencias necesarias para paquetes nativos
+RUN apk add --no-cache \
+    bash \
+    git \
+    curl \
+    ffmpeg \
+    python3 \
+    py3-pip \
+    build-base
 
-# Instala las dependencias con pnpm
-RUN npm install -g pnpm@10
+# Clonar el repositorio
+RUN git clone https://github.com/leerob/next-music-player /app
+
+# Establecer el directorio de trabajo dentro del proyecto clonado
+WORKDIR /app
+
+# Instalar pnpm
+RUN npm install -g pnpm
+
+# Instalar las dependencias del proyecto
 RUN pnpm install
-#RUN npm run test:coverage
-# Copia el resto del código fuente
-COPY . .
 
-# Expone el puerto que utiliza la aplicación (ajústalo según tu aplicación)
+# Copiar archivos de audio locales (paso opcional para builds locales)
+# COPY tracks /app/tracks
+
+# Exponer el puerto que utiliza la aplicación
 EXPOSE 3000
 
-# Comando para iniciar la aplicación
+# Configurar la base de datos y llenarla con datos iniciales
+RUN pnpm db:setup && pnpm db:migrate && pnpm db:seed
+
+# Iniciar el servidor de desarrollo
 CMD ["pnpm", "dev"]
