@@ -34,4 +34,4 @@ COPY --from=builder /app/.env ./.env #Si usas variables de entorno
 EXPOSE 3000
 
 
-CMD ["pnpm", "run", "start"]
+CMD ["pnpm dev"]
