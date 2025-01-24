@@ -1,19 +1,9 @@
 version: '3.8'
+
 services:
-  app:
+  next-music-player:
     build: .
     ports:
       - "3000:3000"
-    environment:
-      POSTGRES_URL: postgresql://postgres:password@db:5432/next_music_player
-    depends_on:
-      - db
-
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: next_music_player
-    ports:
-      - "5432:5432"
+    volumes:
+      - ./tracks:/app/tracks
