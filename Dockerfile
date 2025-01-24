@@ -11,7 +11,6 @@ COPY pnpm-lock.yaml ./
 # Instala las dependencias con pnpm
 RUN npm install -g pnpm@10
 RUN pnpm install
-
 # Copia el resto del código fuente
 COPY . .
 
@@ -19,4 +18,4 @@ COPY . .
 EXPOSE 3000
 
 # Comando para iniciar la aplicación
-CMD ["pnpm", "start"]
+CMD ["pnpm", "dev"]
