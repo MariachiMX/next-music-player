@@ -15,7 +15,7 @@ RUN apk add --no-cache \
     build-base
 
 # Clonar el repositorio
-RUN git clone --branch dev01 https://github.com/leerob/next-music-player /app
+RUN git clone --branch DEV01 https://github.com/leerob/next-music-player /app
 
 # Establecer el directorio de trabajo dentro del proyecto clonado
 WORKDIR /app
