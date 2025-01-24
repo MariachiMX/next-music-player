@@ -1,10 +1,19 @@
-version: "3.9"  # Asegúrate de usar una versión compatible
-
+version: '3.8'
 services:
-  web:
-    build: . # Contexto de construcción es el directorio actual
+  app:
+    build: .
     ports:
-      - "3000:3000" # Mapea el puerto del contenedor al puerto del host
-    #Puedes agregar variables de entorno si son necesarias
-    #environment:
-      #- NODE_ENV=development
+      - "3000:3000"
+    environment:
+      POSTGRES_URL: postgresql://postgres:password@db:5432/next_music_player
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: next_music_player
+    ports:
+      - "5432:5432"
