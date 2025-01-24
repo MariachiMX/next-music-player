@@ -15,7 +15,7 @@ RUN apk add --no-cache \
     build-base
 
 # Clonar el repositorio
-RUN git clone https://github.com/leerob/next-music-player /app
+RUN git clone --branch dev01 https://github.com/leerob/next-music-player /app
 
 # Establecer el directorio de trabajo dentro del proyecto clonado
 WORKDIR /app
@@ -28,6 +28,9 @@ RUN pnpm install
 
 # Copiar archivos de audio locales (paso opcional para builds locales)
 # COPY tracks /app/tracks
+
+# Configurar la variable de entorno para la base de datos (puedes sobreescribirla en tiempo de ejecución)
+ENV POSTGRES_URL="postgresql://postgres:password@localhost:5432/next_music_player"
 
 # Exponer el puerto que utiliza la aplicación
 EXPOSE 3000
