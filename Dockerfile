@@ -12,6 +12,12 @@ RUN npm install -g pnpm
 # Instala las dependencias (incluyendo las de desarrollo)
 RUN pnpm install
 
+ARG SETUP_CONFIG=L
+ENV SETUP_CONFIG=${SETUP_CONFIG}
+RUN npm run db:setup
+RUN npm run db:migrate
+RUN npm run db:seed
+
 EXPOSE 3000
 
 CMD ["pnpm", "run", "dev"]
