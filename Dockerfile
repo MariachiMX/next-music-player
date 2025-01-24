@@ -1,27 +1,17 @@
-FROM node:alpine AS builder
-
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-RUN pnpm install
-
-COPY . .
-
-WORKDIR /app
-
-ARG SETUP_CONFIG=L
-ENV SETUP_CONFIG=${SETUP_CONFIG}
-RUN npm run db:setup
-
-COPY tracks /app/tracks
-
-RUN npm run db:migrate
-RUN npm run db:seed
-
 FROM node:alpine
 
 WORKDIR /app
+
+# Copia los archivos necesarios
+COPY package*.json pnpm-lock.yaml ./
 COPY . .
 
+# Instala pnpm
+RUN npm install -g pnpm
+
+# Instala las dependencias (incluyendo las de desarrollo)
+RUN pnpm install
+
 EXPOSE 3000
+
 CMD ["pnpm", "run", "dev"]
