@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: music-player
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: music-player
+  template:
+    metadata:
+      labels:
+        app: music-player
+    spec:
+      containers:
+      - name: music-player
+        image: ${DOCKER_IMAGE}
+        ports:
+        - containerPort: 3000
