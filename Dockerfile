@@ -15,7 +15,6 @@ RUN pnpm install
 ARG SETUP_CONFIG=L
 ENV SETUP_CONFIG=${SETUP_CONFIG}
 RUN pnpm db:setup
-RUN pnpm db:migrate
 
 
 EXPOSE 3000
