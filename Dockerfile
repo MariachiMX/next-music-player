@@ -15,7 +15,8 @@ RUN pnpm install
 ARG SETUP_CONFIG=L
 ENV SETUP_CONFIG=${SETUP_CONFIG}
 RUN pnpm db:setup
-RUN pnpm db:migrate
+
+RUN pnpm db:migrate || (echo "Error en db:migrate. Saliendo..." && exit 1)
 RUN pnpm db:seed
 
 EXPOSE 3000
