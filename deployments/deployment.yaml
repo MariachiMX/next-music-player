@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
       - name: music-player
-        image: ${DOCKER_IMAGE}
+        image: ${DOCKER_IMAGE.trim()} 
         ports:
         - containerPort: 3000
