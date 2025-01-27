@@ -46,57 +46,64 @@ pipeline {
             }
         }
 
-stage('Deploy to KIND') {
-    steps {
-        script {
-            def deploymentYaml = """
-                apiVersion: apps/v1
-                kind: Deployment
-                metadata:
-                  name: music-player
-                  namespace: default
-                spec:
-                  replicas: 1
-                  selector:
-                    matchLabels:
-                      app: music-player
-                  template:
-                    metadata:
-                      labels:
-                        app: music-player
-                    spec:
-                      containers:
-                      - name: music-player
-                        image: ${DOCKER_IMAGE}
-                        ports:
-                        - containerPort: 3000
-            """
-
-            writeFile file: 'deployment.yaml', text: deploymentYaml
-            sh 'kubectl apply -f deployment.yaml'
-
-            def serviceYaml = """
-                apiVersion: v1
-                kind: Service
-                metadata:
-                    name: music-player-service
-                    namespace: default
-                spec:
-                    selector:
-                        app: music-player
-                    ports:
-                        - protocol: TCP
-                          port: 80
-                          targetPort: 3000
-                    type: LoadBalancer 
-            """
-             writeFile file: 'service.yaml', text: serviceYaml
-            sh 'kubectl apply -f service.yaml'
-
-            sh 'kubectl get service music-player-service'
-            echo 'Despliegue en KIND exitoso!'
+        stage('Deploy PostgreSQL to KIND') {
+            steps {
+                sh 'kubectl apply -f deployment/postgres.yml'
+                sh 'kubectl wait --for=condition=ready pod -l app=postgres --timeout=60s'
+            }
         }
-    }
-}
+
+        stage('Deploy to KIND') {
+            steps {
+                script {
+                    def deploymentYaml = """
+                        apiVersion: apps/v1
+                        kind: Deployment
+                        metadata:
+                        name: music-player
+                        namespace: default
+                        spec:
+                        replicas: 1
+                        selector:
+                            matchLabels:
+                            app: music-player
+                        template:
+                            metadata:
+                            labels:
+                                app: music-player
+                            spec:
+                            containers:
+                            - name: music-player
+                                image: ${DOCKER_IMAGE}
+                                ports:
+                                - containerPort: 3000
+                    """
+
+                    writeFile file: 'deployment.yaml', text: deploymentYaml
+                    sh 'kubectl apply -f deployment.yaml'
+
+                    def serviceYaml = """
+                        apiVersion: v1
+                        kind: Service
+                        metadata:
+                            name: music-player-service
+                            namespace: default
+                        spec:
+                            selector:
+                                app: music-player
+                            ports:
+                                - protocol: TCP
+                                port: 80
+                                targetPort: 3000
+                            type: LoadBalancer 
+                    """
+                    writeFile file: 'service.yaml', text: serviceYaml
+                    sh 'kubectl apply -f service.yaml'
+
+                    sh 'kubectl get service music-player-service'
+                    echo 'Despliegue en KIND exitoso!'
+                }
+            }
+        }
 }
 }
