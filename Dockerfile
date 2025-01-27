@@ -6,6 +6,9 @@ WORKDIR /app
 COPY package*.json pnpm-lock.yaml ./
 COPY . .
 
+#Instala bash
+RUN apk add --no-cache bash
+
 # Instala pnpm
 RUN npm install -g pnpm
 
