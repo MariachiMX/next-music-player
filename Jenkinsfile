@@ -48,7 +48,7 @@ pipeline {
 
         stage('Deploy PostgreSQL to KIND') {
             steps {
-                sh 'kubectl apply -f ./deployment/postgres.yml'
+                sh 'kubectl apply -f deployments/postgres.yml'
                 sh 'kubectl wait --for=condition=ready pod -l app=postgres --timeout=60s'
             }
         }
