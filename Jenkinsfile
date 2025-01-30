@@ -91,7 +91,7 @@ pipeline {
                             - protocol: TCP
                               port: 80
                               targetPort: 3000
-                          type: LoadBalancer
+                          type: ClusterIP
                     """
                     writeFile file: 'service.yaml', text: serviceYaml
                     sh 'kubectl apply -f service.yaml'
