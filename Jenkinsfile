@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
     environment {
@@ -14,7 +13,7 @@ pipeline {
             steps {
                 script {
                     def sonarScannerHome = tool 'sonar-scanner' // Obtiene la ruta del scanner configurado en Jenkins
-                    withSonarQubeEnv('SonarQube Server') {
+                    withSonarQubeEnv('SonarQubeServer') {
                         sh """
                             ${sonarScannerHome}/bin/sonar-scanner \
                                 -Dsonar.projectKey=001-Proyecto-nawicard-Evaluacion \
@@ -27,12 +26,11 @@ pipeline {
                     }
                 }
         //Calidad Gate
-        //waitForQualityGate abortOnError: true, credentialsId: 'SonarQube Server'
+        //waitForQualityGate abortOnError: true, credentialsId: 'SonarQubeServer'
     }
 }
         stage('Build') {
             steps {
-                sh 'docker-compose build'
                 sh 'docker build -t web .'
             }
         }
@@ -46,64 +44,61 @@ pipeline {
             }
         }
 
-        stage('Deploy PostgreSQL to KIND') {
+        stage('Deploy PostgreSQL into Minikube') {
             steps {
                 sh 'kubectl apply -f deployments/postgres.yml'
                 sh 'kubectl wait --for=condition=ready pod -l app=postgres --timeout=60s'
             }
         }
 
-        stage('Deploy to KIND') {
+        stage('Deploy into Minikube') {
             steps {
                 script {
                     def deploymentYaml = """
                         apiVersion: apps/v1
                         kind: Deployment
                         metadata:
-                        name: music-player
-                        namespace: default
+                          name: music-player
+                          namespace: default
                         spec:
-                        replicas: 1
-                        selector:
+                          replicas: 1
+                          selector:
                             matchLabels:
-                            app: music-player
-                        template:
+                              app: music-player
+                          template:
                             metadata:
-                            labels:
+                              labels:
                                 app: music-player
                             spec:
-                            containers:
-                            - name: music-player
+                              containers:
+                              - name: music-player
                                 image: ${DOCKER_IMAGE}
                                 ports:
                                 - containerPort: 3000
                     """
-
                     writeFile file: 'deployment.yaml', text: deploymentYaml
                     sh 'kubectl apply -f deployment.yaml'
-
                     def serviceYaml = """
                         apiVersion: v1
                         kind: Service
                         metadata:
-                            name: music-player-service
-                            namespace: default
+                          name: music-player-service
+                          namespace: default
                         spec:
-                            selector:
-                                app: music-player
-                            ports:
-                                - protocol: TCP
-                                port: 80
-                                targetPort: 3000
-                            type: LoadBalancer 
+                          selector:
+                            app: music-player
+                          ports:
+                            - protocol: TCP
+                              port: 80
+                              targetPort: 3000
+                          type: LoadBalancer
                     """
                     writeFile file: 'service.yaml', text: serviceYaml
                     sh 'kubectl apply -f service.yaml'
-
                     sh 'kubectl get service music-player-service'
-                    echo 'Despliegue en KIND exitoso!'
+                    echo 'Despliegue en K8s exitoso!'
                 }
             }
         }
-}
+    }
 }
